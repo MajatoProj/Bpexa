@@ -2,6 +2,9 @@ if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 BiocManager::install("edgeR")
+install.packages("devtools")
+devtools::install_github("LUMC/dgeAnalysis")
+
 
 
 library(edgeR)
@@ -20,7 +23,7 @@ highExprDge <- dge[selectedFeatures, , keep.lib.sizes = FALSE]
 
 #Normalize
 normDge <- calcNormFactors(highExprDge, method = "TMM")
-normDge <- cpm(normDge, log = TRUE, prior.count = 1)
+normDge$counts <- cpm(normDge, log = TRUE, prior.count = 1)
 
 #PCA after filter
 df = t(normDge)
@@ -28,3 +31,8 @@ pc <- prcomp(df, center=TRUE, scale=TRUE)
 library(factoextra)
 fviz_eig(pc, choice= c("variance", "eigenvalue"), ncp =13, addlabels=TRUE)
 summary(pc)$importance
+
+library(devtools)
+library("dgeAnalysis")
+
+nieuwe_pca <- pca_data(normDge)
